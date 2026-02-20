@@ -1,0 +1,4 @@
+1,breakfast,Fried eggs,26
+2,breakfast,Pancakes,30
+3,lunch,Hamburger,45
+4,dinner,Steak,90
