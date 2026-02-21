@@ -21,14 +21,31 @@ public class ClientHandler implements Runnable {
                         new ObjectInputStream(socket.getInputStream());
         ) {
 
-            String request = (String) in.readObject();
+            RequestWrapper requestWrapper = (RequestWrapper) in.readObject();
+            String requestType = requestWrapper.getRequestType();
+            Object payload = requestWrapper.getPayload();
 
-            if ("GET_MENU".equals(request)) {
+            if ("GET_MENU".equals(requestType)) {
 
                 ArrayList<MenuItem> menu =
                         Util.loadMenuFromFile("menu.txt");
 
                 out.writeObject(menu);
+                out.flush();
+            } else if ("ORDER".equals(requestType)) {
+                // Receive the Order object from the client
+                Order order = (Order) payload;
+
+                // Print the order details on the server side
+                ArrayList<MenuItem> menu = Util.loadMenuFromFile("menu.txt");
+                String orderSummary = order.toOrderString(menu);
+                System.out.println(orderSummary);
+
+                // Prepare the response to send back to the client
+                Response response = new Response(orderSummary);
+
+                // Send confirmation response back to the client
+                out.writeObject(response);
                 out.flush();
             }
 
